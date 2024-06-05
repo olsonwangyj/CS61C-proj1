@@ -46,10 +46,12 @@ Image *readData(char *filename)
 			fscanf(fp, "%hhu %hhu %hhu", &color[i][j].R, &color[i][j].G, &color[i][j].B);
 		}
 	}
+
 	fclose(fp);
 	data->cols = col;
 	data->rows = row;
 	data->image = color;
+
 	return data;
 }
 
@@ -60,6 +62,7 @@ void writeData(Image *image)
 	printf("P3\n");
 	printf("%d %d\n", image->cols, image->rows);
 	printf("255\n");
+	
 	int j;
 	for (int i = 0; i < image->rows; i++) {
 		for (j = 0; j < image->cols - 1; j++) {
@@ -73,6 +76,9 @@ void writeData(Image *image)
 void freeImage(Image *image)
 {
 	//YOUR CODE HERE
+	for (int i = 0; i < image->rows; i++) {
+		free(image->image[i]);
+	}
 	free(image->image);
 	free(image);
 }

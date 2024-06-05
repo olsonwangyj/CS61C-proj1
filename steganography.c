@@ -7,7 +7,7 @@
 ** AUTHOR:      Dan Garcia  -  University of California at Berkeley
 **              Copyright (C) Dan Garcia, 2020. All rights reserved.
 **				Justin Yokota - Starter Code
-**				YOUR NAME HERE
+**				Wang Yanjie
 **
 ** DATE:        2020-08-23
 **
@@ -22,12 +22,28 @@
 Color *evaluateOnePixel(Image *image, int row, int col)
 {
 	//YOUR CODE HERE
+	struct Color *color = (struct Color*) malloc(sizeof(struct Color));
+	*color = image->image[row][col];
+	return color;
 }
 
 //Given an image, creates a new image extracting the LSB of the B channel.
 Image *steganography(Image *image)
 {
 	//YOUR CODE HERE
+	struct Image *ans = (struct Image*) malloc(sizeof(struct Image));
+	ans->cols = image->cols;
+	ans->rows = image->rows;
+	ans->image = (struct Color**) malloc(ans->rows * sizeof(struct Color*));
+	
+	for (int i = 0; i < ans->rows; i++) {
+		ans->image[i] = (struct Color*) malloc(ans->cols * sizeof(struct Color));
+		for (int j = 0; j < ans->cols; j++) {
+			ans->image[i][j].B = (image->image[i][j].B & 1);
+		}
+	}
+
+	return ans;
 }
 
 /*
@@ -46,4 +62,26 @@ Make sure to free all memory before returning!
 int main(int argc, char **argv)
 {
 	//YOUR CODE HERE
+	struct Image *tmp;
+	tmp = readData(argv[1]);
+	struct Image *image = steganography(tmp);
+
+	for (int i = 0; i < image->rows; i++) {
+		for (int j = 0; j < image->cols; j++) {
+			if (image->image[i][j].B) {
+				image->image[i][j].R = 255;
+				image->image[i][j].G = 255;
+				image->image[i][j].B = 255;
+			} else {
+				image->image[i][j].R = 0;
+				image->image[i][j].G = 0;
+				image->image[i][j].B = 0;
+			}
+		}
+	}
+
+	writeData(image);
+	freeImage(image);
+	freeImage(tmp);
+	return 0;
 }
